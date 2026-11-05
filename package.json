@@ -1,1 +1,1 @@
-{"name":"squeek-city","version":"1.0.0","private":true,"type":"module","dependencies":{"ethers":"^6.15.0"}}
+{"name":"squeek-city","version":"1.0.0","private":true,"engines":{"node":">=20"},"dependencies":{"ethers":"6.15.0"}}
