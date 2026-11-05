@@ -1,8 +1,7 @@
-import {randomBytes} from "node:crypto";
-import {getJson,setJson} from "./redis.js";
-export function addressOf(req){const raw=req.headers.cookie||"";const hit=raw.match(/(?:^|; )sc_session=([^;]+)/);return hit?decodeURIComponent(hit[1]):null}
-export async function requireUser(req){const token=addressOf(req);if(!token) return null;return getJson("sc:session:"+token)}
-export function token(){return randomBytes(32).toString("hex")}
-export function nonce(){return randomBytes(18).toString("hex")}
-export function message(address,n){return `Squeek City\n\nSign this message to enter the city.\nNo transaction and no gas.\n\nWallet: ${address}\nNonce: ${n}`}
-export function sessionCookie(value){return `sc_session=${value}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${process.env.VERCEL_ENV==="production"?"; Secure":""}`}
+const crypto=require("crypto");const {get,set}=require("./redis");
+function random(){return crypto.randomBytes(24).toString("hex")}
+function readCookie(req,name){const match=(req.headers.cookie||"").match(new RegExp("(?:^|; )"+name+"=([^;]+)"));return match?decodeURIComponent(match[1]):null}
+function message(address,nonce){return "Squeek City\n\nSign to enter your district.\nNo transaction. No gas.\n\nWallet: "+address+"\nNonce: "+nonce}
+async function session(req){const id=readCookie(req,"sc_session");return id?get("sc:session:"+id):null}
+function cookie(value){return "sc_session="+value+"; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800"+(process.env.VERCEL_ENV==="production"?"; Secure":"")}
+module.exports={random,message,session,cookie,set};
