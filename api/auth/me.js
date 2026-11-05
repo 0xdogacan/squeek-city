@@ -1,0 +1,2 @@
+import {getJson,ready} from "../lib/redis.js";import {requireUser} from "../lib/auth.js";
+export default async function handler(req,res){try{if(!ready())return res.status(503).json({error:"Storage not configured"});const user=await requireUser(req);if(!user)return res.status(401).json({error:"Not signed in"});const city=await getJson("sc:city:"+user.address);return res.status(200).json({city})}catch(e){return res.status(500).json({error:e.message})}}
